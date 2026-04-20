@@ -1,17 +1,16 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useEffect } from "react";
+import ReactFlow, {
+  addEdge,
+  applyNodeChanges,
+  applyEdgeChanges,
+} from "reactflow";
+import "reactflow/dist/style.css";
+
 import StartNode from "../nodes/StartNode";
 import TaskNode from "../nodes/TaskNode";
 import ApprovalNode from "../nodes/ApprovalNode";
 import AutoNode from "../nodes/AutoNode";
 import EndNode from "../nodes/EndNode";
-
-import ReactFlow, {
-  useNodesState,
-  useEdgesState,
-  addEdge,
-} from "reactflow";
-import "reactflow/dist/style.css";
-
 
 const nodeTypes = {
   start: StartNode,
@@ -24,35 +23,80 @@ const nodeTypes = {
 let id = 0;
 const getId = () => `node_${id++}`;
 
-export default function Canvas() {
+export default function Canvas({
+  nodes,
+  setNodes,
+  edges,
+  setEdges,
+  setSelectedNode,
+  setUpdateNode,
+}) {
   const reactFlowWrapper = useRef(null);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const onNodesChange = (changes) => {
+    setNodes((nds) => applyNodeChanges(changes, nds));
+  };
+
+  const onEdgesChange = (changes) => {
+    setEdges((eds) => applyEdgeChanges(changes, eds));
+  };
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
-    []
+    [setEdges]
   );
 
-  const onDragOver = (event) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = "move";
+  const onNodeClick = (_, node) => {
+    setSelectedNode(node);
   };
 
-  const onDrop = (event) => {
-    event.preventDefault();
+  const onNodesDelete = (deletedNodes) => {
+    const deletedIds = deletedNodes.map((n) => n.id);
 
-    const type = event.dataTransfer.getData("application/reactflow");
+    setEdges((eds) =>
+      eds.filter(
+        (e) => !deletedIds.includes(e.source) && !deletedIds.includes(e.target)
+      )
+    );
+
+    setSelectedNode(null);
+  };
+
+  const updateNode = (id, newData) => {
+    setNodes((nds) => {
+      const updated = nds.map((n) =>
+        n.id === id ? { ...n, data: { ...n.data, ...newData } } : n
+      );
+
+      const updatedNode = updated.find((n) => n.id === id);
+      setSelectedNode(updatedNode);
+
+      return updated;
+    });
+  };
+
+  useEffect(() => {
+    setUpdateNode(() => updateNode);
+  }, []);
+
+  const onDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+
+    const type = e.dataTransfer.getData("application/reactflow");
 
     const position = {
-      x: event.clientX - 250,
-      y: event.clientY - 50,
+      x: e.clientX - 250,
+      y: e.clientY - 50,
     };
 
     const newNode = {
       id: getId(),
-      type: type,
+      type,
       position,
       data: { label: type },
     };
@@ -66,11 +110,17 @@ export default function Canvas() {
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        onNodeClick={onNodeClick}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodesDelete={onNodesDelete}
         onConnect={onConnect}
         onDrop={onDrop}
         onDragOver={onDragOver}
+        fitView
+        deleteKeyCode={["Backspace", "Delete"]} 
+        nodesFocusable={true} 
+        elementsSelectable={true} 
       />
     </div>
   );

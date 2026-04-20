@@ -7,7 +7,7 @@ export default function EndNode({ data }) {
       <strong>End</strong>
       <div>{data.label}</div>
 
-      {/* Only input */}
+      
       <Handle type="target" position={Position.Top} />
     </div>
   );

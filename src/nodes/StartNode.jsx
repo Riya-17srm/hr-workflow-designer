@@ -7,7 +7,6 @@ export default function StartNode({ data }) {
       <strong>Start</strong>
       <div>{data.label}</div>
 
-      {/* Output handle */}
       <Handle type="source" position={Position.Bottom} />
     </div>
   );

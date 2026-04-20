@@ -1,16 +1,104 @@
-# React + Vite
+# HR Workflow Designer (React + React Flow)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+This project is a visual workflow builder designed for HR teams to create and test internal workflows such as onboarding, leave approvals, and document verification.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+<img width="936" height="436" alt="hr-workflow" src="https://github.com/user-attachments/assets/a2cf9d6a-6c84-49d3-b819-72bf8fd661fa" />
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Users can:
 
-## Expanding the ESLint configuration
+* Drag and drop nodes
+* Configure each step dynamically
+* Connect steps to form workflows
+* Simulate execution of workflows
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+
+## Features
+
+* Interactive workflow canvas using React Flow
+* Custom node types:
+
+  * Start Node
+  * Task Node
+  * Approval Node
+  * Automated Node
+  * End Node
+* Dynamic node configuration panel
+* Real-time updates (controlled components)
+* Workflow simulation engine
+* Node and edge deletion support
+* Basic validation (start node check, cycle detection)
+
+
+
+## Architecture
+
+### State Management
+
+* Centralized state (`nodes`, `edges`) in App component
+* Shared across Canvas, NodePanel, and Simulation
+
+### Components
+
+* `Canvas` → handles graph rendering and interactions
+* `Sidebar` → drag-and-drop nodes
+* `NodePanel` → dynamic forms for node configuration
+* `SimulationPanel` → displays execution logs
+
+### Data Model
+
+* Workflow represented as a graph:
+
+  * Nodes → steps
+  * Edges → connections
+
+### Simulation Logic
+
+* Traverses workflow starting from Start Node
+* Executes steps sequentially
+* Generates readable logs
+
+
+## Tech Stack
+
+* React (Hooks)
+* React Flow
+* JavaScript (ES6)
+* Vite
+
+
+
+## How to Run
+
+```bash
+npm install
+npm run dev
+```
+
+
+## Assumptions
+
+* Single linear workflow path
+* No backend persistence (in-memory only)
+* First outgoing edge is followed
+
+
+## Future Improvements
+
+* Branching workflows (conditions)
+* Backend integration
+* Undo/Redo functionality
+* Visual error highlighting
+* Workflow export/import (JSON)
+
+
+## What I Focused On
+
+* Clean architecture and modular design
+* Scalable state management
+* Dynamic UI rendering
+* Functional simulation engine
+* Delivering a working prototype within time constraints
